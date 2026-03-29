@@ -1,21 +1,19 @@
 import { useState, useMemo } from 'react';
-import {
-  Users, Search, X, ArrowUpRight, ArrowDownRight,
-  Activity, ShieldAlert, Clock, BarChart3, ChevronRight,
-} from 'lucide-react';
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  ResponsiveContainer, Tooltip, BarChart, Bar, Cell,
-} from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
 import { generateClients } from '../data/mockData';
-import './Clients.css';
+
+const CHART_COLORS = ['#a0ffc3', '#00e3fd', '#d7e6ff', '#ff716c', '#ffffff33', '#ffffff55'];
 
 function CustomTooltip({ active, payload }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="chart-tooltip">
-      <span className="tooltip-label">{payload[0].name || payload[0].dataKey}</span>
-      <span className="tooltip-value">{payload[0].value?.toLocaleString()}</span>
+    <div className="bg-surface-container-highest border border-white/10 p-4 backdrop-blur-xl">
+      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest block mb-1">
+        {payload[0].payload.time}
+      </span>
+      <span className="text-sm font-headline italic text-on-surface">
+        {payload[0].value?.toLocaleString()} Transactions
+      </span>
     </div>
   );
 }
@@ -41,227 +39,189 @@ export default function Clients() {
   }, [clients, search, sortBy]);
 
   return (
-    <div className="page-content">
-      <div className="page-header">
-        <h1><Users size={24} style={{ color: 'var(--accent-purple)' }} /> API <span className="text-gradient">Clients</span></h1>
-        <p>Monitor and manage connected API clients and their threat profiles</p>
-      </div>
-
-      {/* Search & Filters */}
-      <div className="clients-toolbar fade-in-up">
-        <div className="search-wrap">
-          <Search size={18} className="search-icon" />
-          <input
-            type="text"
-            className="input-field search-input"
-            placeholder="Search clients by name or API key..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-          />
-          {search && (
-            <button className="search-clear" onClick={() => setSearch('')} data-cursor-hover>
-              <X size={16} />
-            </button>
-          )}
+    <div className="fade-in-up">
+      {/* Header */}
+      <div className="flex justify-between items-end mb-16">
+        <div>
+          <h2 className="text-5xl font-headline italic font-light text-on-surface leading-tight mb-2">
+            Authorized <span className="text-secondary">Personnel</span> Inventory
+          </h2>
+          <p className="text-sm font-body text-on-surface-variant tracking-wider max-w-lg">
+            Proprietary access keys and identification metadata for all connected neural interfaces. Surveillance is constant across all listed nodes.
+          </p>
         </div>
-        <div className="sort-group">
-          <span className="sort-label">Sort by:</span>
-          {['requests', 'blockRate', 'latency'].map(s => (
-            <button
-              key={s}
-              className={`sort-btn ${sortBy === s ? 'active' : ''}`}
-              onClick={() => setSortBy(s)}
-              data-cursor-hover
-            >
-              {s === 'requests' ? 'Volume' : s === 'blockRate' ? 'Block Rate' : 'Latency'}
-            </button>
-          ))}
+        <div className="flex items-center gap-6">
+          <div className="relative flex items-center border-b border-outline-variant/20 focus-within:border-primary group transition-all">
+            <span className="material-symbols-outlined text-on-surface-variant text-lg">search</span>
+            <input 
+              className="bg-transparent border-none text-[10px] tracking-widest focus:ring-0 text-on-surface placeholder:text-on-surface-variant/40 w-64 uppercase" 
+              placeholder="SEARCH CREDENTIALS..." 
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              type="text"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Client Table */}
-      <div className="glass-card clients-table-card fade-in-up">
-        <div className="clients-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>API Key</th>
-                <th>Requests</th>
-                <th>Blocked</th>
-                <th>Block Rate</th>
-                <th>Avg Latency</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredClients.map((client) => (
-                <tr
-                  key={client.id}
-                  className="client-row"
-                  onClick={() => setSelectedClient(client)}
-                  data-cursor-hover
-                >
-                  <td>
-                    <div className="client-name-cell">
-                      <div className="client-avatar">
-                        {client.name.charAt(0)}
-                      </div>
-                      <div>
-                        <span className="client-name">{client.name}</span>
-                        <span className="client-country">{client.country}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td><code className="api-key-code">{client.apiKey}</code></td>
-                  <td className="mono-text">{client.requests.toLocaleString()}</td>
-                  <td className="mono-text">{client.blocked.toLocaleString()}</td>
-                  <td>
-                    <div className="block-rate-cell">
-                      <div className="mini-bar">
-                        <div
-                          className="mini-bar-fill"
-                          style={{
-                            width: `${client.blockRate}%`,
-                            background: parseFloat(client.blockRate) > 15 ? '#ef4444' : parseFloat(client.blockRate) > 8 ? '#f59e0b' : '#10b981'
-                          }}
-                        />
-                      </div>
-                      <span className="mono-text">{client.blockRate}%</span>
-                    </div>
-                  </td>
-                  <td className="mono-text">{client.avgLatency}ms</td>
-                  <td>
-                    <span className={`badge ${client.status === 'active' ? 'badge-allowed' : 'badge-info'}`}>
-                      {client.status}
-                    </span>
-                  </td>
-                  <td>
-                    <ChevronRight size={16} className="row-chevron" />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* Sorting Tabs */}
+      <div className="flex gap-4 mb-8">
+        {[
+          { key: 'requests', label: 'Throughput', icon: 'speed' },
+          { key: 'blockRate', label: 'Nullification Rate', icon: 'security' },
+          { key: 'latency', label: 'Neural Latency', icon: 'avg_pace' },
+        ].map(s => (
+          <button
+            key={s.key}
+            onClick={() => setSortBy(s.key)}
+            className={`flex items-center gap-2 px-6 py-3 border transition-all uppercase tracking-[0.2em] text-[10px] font-bold ${
+              sortBy === s.key ? 'border-primary text-primary bg-primary/5 shadow-[0_0_15px_#a0ffc333]' : 'border-white/5 text-slate-500'
+            }`}
+          >
+            <span className="material-symbols-outlined text-sm">{s.icon}</span>
+            {s.label}
+          </button>
+        ))}
       </div>
 
-      {/* Client Detail Modal */}
+      {/* Client Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filteredClients.map((client) => (
+          <div 
+            key={client.id}
+            onClick={() => setSelectedClient(client)}
+            className="glass-panel group p-8 cursor-pointer hover:bg-surface-container-high transition-all relative overflow-hidden"
+          >
+
+            <div className="flex justify-between items-start mb-10">
+              <div className="w-12 h-12 bg-white/5 border border-white/10 flex items-center justify-center font-headline italic text-2xl text-slate-400 group-hover:text-primary transition-colors">
+                {client.name.charAt(0)}
+              </div>
+              <span className={`text-[8px] px-2 py-0.5 uppercase tracking-widest font-mono ${client.status === 'active' ? 'bg-primary/10 text-primary' : 'bg-slate-500/10 text-slate-500'}`}>
+                {client.status === 'active' ? 'Sync_Stable' : 'Offline'}
+              </span>
+            </div>
+
+            <h3 className="text-2xl font-headline italic text-on-surface mb-2 group-hover:text-primary transition-colors">{client.name}</h3>
+            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest mb-10 border-b border-white/5 pb-4">{client.apiKey}</p>
+
+            <div className="grid grid-cols-2 gap-y-6 gap-x-8">
+              <div>
+                <span className="block text-[8px] uppercase tracking-widest text-slate-600 mb-1">Transactions</span>
+                <span className="text-lg font-body font-light">{client.requests.toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="block text-[8px] uppercase tracking-widest text-slate-600 mb-1">Null Rate</span>
+                <span className={`text-lg font-body font-light ${parseFloat(client.blockRate) > 15 ? 'text-error' : 'text-primary'}`}>{client.blockRate}%</span>
+              </div>
+            </div>
+
+            <div className="mt-10 flex justify-between items-center text-[10px] text-slate-600 uppercase tracking-widest border-t border-white/5 pt-4">
+              <span>{client.country}</span>
+              <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Detail Modal Overlay */}
       {selectedClient && (
-        <div className="modal-overlay" onClick={() => setSelectedClient(null)}>
-          <div className="modal-content glass-card" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <div className="modal-title-row">
-                <div className="client-avatar large">
-                  {selectedClient.name.charAt(0)}
-                </div>
-                <div>
-                  <h2>{selectedClient.name}</h2>
-                  <code className="api-key-code">{selectedClient.apiKey}</code>
-                </div>
-              </div>
-              <button className="modal-close" onClick={() => setSelectedClient(null)} data-cursor-hover>
-                <X size={20} />
-              </button>
-            </div>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-8 bg-black/80 backdrop-blur-md animate-in fade-in duration-300">
+          <div className="glass-panel w-full max-w-5xl max-h-[90vh] overflow-y-auto no-scrollbar relative flex flex-col p-12 lg:p-16 border-white/10">
+            {/* Close Button */}
+            <button 
+              onClick={() => setSelectedClient(null)}
+              className="absolute top-8 right-8 text-slate-500 hover:text-on-surface transition-colors"
+            >
+              <span className="material-symbols-outlined text-3xl">close</span>
+            </button>
 
-            {/* Modal Stats */}
-            <div className="modal-stats">
-              <div className="modal-stat">
-                <Activity size={18} style={{ color: '#7c3aed' }} />
-                <div>
-                  <span className="modal-stat-val">{selectedClient.requests.toLocaleString()}</span>
-                  <span className="modal-stat-label">Total Requests</span>
-                </div>
-              </div>
-              <div className="modal-stat">
-                <ShieldAlert size={18} style={{ color: '#ef4444' }} />
-                <div>
-                  <span className="modal-stat-val">{selectedClient.blocked.toLocaleString()}</span>
-                  <span className="modal-stat-label">Blocked</span>
-                </div>
-              </div>
-              <div className="modal-stat">
-                <BarChart3 size={18} style={{ color: '#f59e0b' }} />
-                <div>
-                  <span className="modal-stat-val">{selectedClient.blockRate}%</span>
-                  <span className="modal-stat-label">Block Rate</span>
-                </div>
-              </div>
-              <div className="modal-stat">
-                <Clock size={18} style={{ color: '#06b6d4' }} />
-                <div>
-                  <span className="modal-stat-val">{selectedClient.avgLatency}ms</span>
-                  <span className="modal-stat-label">Avg Latency</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Usage Chart */}
-            <div className="modal-section">
-              <h3>Usage Over Time</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={selectedClient.usageData}>
-                  <defs>
-                    <linearGradient id="modalArea" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#7c3aed" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#7c3aed" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(124,58,237,0.08)" />
-                  <XAxis dataKey="time" tick={{ fontSize: 10, fill: '#6b6b8d' }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fontSize: 10, fill: '#6b6b8d' }} tickLine={false} axisLine={false} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="requests" stroke="#7c3aed" fill="url(#modalArea)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Top Attacks */}
-            <div className="modal-section">
-              <h3>Top Attack Categories</h3>
-              <div className="attack-bars">
-                {selectedClient.topAttacks.map((atk, i) => (
-                  <div key={i} className="attack-bar-row">
-                    <span className="attack-bar-label">{atk.category}</span>
-                    <div className="attack-bar-track">
-                      <div
-                        className="attack-bar-fill"
-                        style={{ width: `${(atk.count / 500) * 100}%` }}
-                      />
-                    </div>
-                    <span className="attack-bar-val mono-text">{atk.count}</span>
+            {/* Modal Header */}
+            <div className="flex justify-between items-start mb-16">
+              <div>
+                <div className="flex items-center gap-4 mb-4">
+                   <div className="w-16 h-16 bg-white/5 border border-white/10 flex items-center justify-center font-headline italic text-4xl text-primary">
+                    {selectedClient.name.charAt(0)}
                   </div>
-                ))}
+                  <div>
+                    <h2 className="text-5xl font-headline italic text-on-surface mb-1">{selectedClient.name}</h2>
+                    <code className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.3em]">{selectedClient.apiKey}</code>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="block text-[10px] uppercase tracking-widest text-slate-500 mb-2">Location Profile</span>
+                <span className="text-2xl font-headline italic text-on-surface">{selectedClient.country}</span>
               </div>
             </div>
 
-            {/* Recent Threats */}
-            <div className="modal-section">
-              <h3>Recent Requests</h3>
-              <div className="modal-table-wrap">
-                <table className="data-table">
-                  <thead>
-                    <tr>
-                      <th>Time</th>
-                      <th>Category</th>
-                      <th>Severity</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {selectedClient.recentRequests.slice(0, 5).map((r, i) => (
-                      <tr key={i}>
-                        <td className="mono-text">{r.timeStr}</td>
-                        <td>{r.category}</td>
-                        <td><span className={`badge badge-${r.severity}`}>{r.severity}</span></td>
-                        <td><span className={`badge badge-${r.status}`}>{r.status}</span></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {/* High Impact Stats */}
+            <div className="grid grid-cols-4 gap-8 mb-16 border-y border-white/5 py-12">
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-slate-500 mb-2">Total Ingress</span>
+                <span className="text-4xl font-body font-light text-on-surface">{selectedClient.requests.toLocaleString()}</span>
               </div>
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-slate-500 mb-2">Nullified Protocols</span>
+                <span className="text-4xl font-body font-light text-error">{selectedClient.blocked.toLocaleString()}</span>
+              </div>
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-slate-500 mb-2">Defense Efficiency</span>
+                <span className="text-4xl font-body font-light text-primary">{selectedClient.blockRate}%</span>
+              </div>
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-slate-500 mb-2">Neural Lag</span>
+                <span className="text-4xl font-body font-light text-secondary">{selectedClient.avgLatency}ms</span>
+              </div>
+            </div>
+
+            {/* Main Visual Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+              <div className="lg:col-span-8">
+                <h4 className="text-[11px] font-mono uppercase text-slate-500 tracking-[0.3em] mb-8 border-b border-white/5 pb-2 inline-block italic">Historical Flow Surveillance</h4>
+                <div className="h-64 mt-4">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={selectedClient.usageData}>
+                      <defs>
+                        <linearGradient id="modalGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#a0ffc3" stopOpacity={0.15} />
+                          <stop offset="100%" stopColor="#a0ffc3" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                      <XAxis dataKey="time" tick={{ fontSize: 9, fill: '#4b5563' }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<CustomTooltip />} />
+                      <Area type="monotone" dataKey="requests" stroke="#a0ffc3" fill="url(#modalGrad)" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="lg:col-span-4">
+                <h4 className="text-[11px] font-mono uppercase text-slate-500 tracking-[0.3em] mb-8 border-b border-white/5 pb-2 inline-block italic">Dominant Anomalies</h4>
+                <div className="space-y-6">
+                  {selectedClient.topAttacks.map((atk, i) => (
+                    <div key={i} className="flex justify-between items-center bg-white/5 p-4 border-l-2 border-primary/40">
+                      <div>
+                        <span className="text-[9px] uppercase tracking-widest text-slate-500 block mb-1">Vector Class</span>
+                        <span className="text-xs font-bold text-on-surface uppercase tracking-tighter">{atk.category}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-mono text-primary">{atk.count} Exp</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Actions */}
+            <div className="mt-16 flex justify-between items-center border-t border-white/5 pt-12">
+              <div className="flex gap-4">
+                <button className="bg-primary text-on-primary px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:shadow-[0_0_15px_rgba(160,255,195,0.4)] transition-all">Regenerate Key</button>
+                <button className="border border-white/10 text-on-surface px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-white/5 transition-all">Flush Logs</button>
+              </div>
+              <p className="text-[9px] font-mono text-slate-600 uppercase tracking-[0.3em]">Surveillance Mode: ACTIVE // PROTOCOL STABLE</p>
             </div>
           </div>
         </div>

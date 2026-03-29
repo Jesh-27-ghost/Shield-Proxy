@@ -7,9 +7,59 @@
     <meta name="description" content="ShieldProxy — LLM Prompt Injection Firewall. Protect AI chatbots from prompt injection, jailbreaks, and system prompt leaks with drop-in reverse proxy protection." />
     <meta name="keywords" content="LLM security, prompt injection firewall, AI security, reverse proxy, chatbot protection" />
     <title>ShieldProxy — LLM Prompt Injection Firewall</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    
+    <!-- Design System Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#0c0e10",
+              "surface-container-high": "#1d2023",
+              "surface-container": "#171a1c",
+              "surface-container-low": "#111416",
+              "surface-container-lowest": "#000000",
+              "surface-container-highest": "#232629",
+              "surface-variant": "#232629",
+              "surface-bright": "#292c30",
+              "surface-dim": "#0c0e10",
+              "on-surface": "#f0f0f3",
+              "on-surface-variant": "#aaabae",
+              "outline": "#747578",
+              "outline-variant": "#46484a",
+              "primary": "#a0ffc3",
+              "primary-container": "#00fc9b",
+              "on-primary": "#00643a",
+              "secondary": "#00e3fd",
+              "secondary-container": "#006875",
+              "tertiary": "#d7e6ff",
+              "error": "#ff716c",
+              "error-container": "#9f0519",
+              "background": "#0c0e10",
+            },
+            fontFamily: {
+              "headline": ["Newsreader", "serif"],
+              "body": ["Space Grotesk", "sans-serif"],
+              "label": ["Space Grotesk", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0px",
+              "lg": "0px",
+              "xl": "0px",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
