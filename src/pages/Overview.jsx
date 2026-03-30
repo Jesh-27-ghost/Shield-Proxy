@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import {
   generateThreatFeed, generateStats, generateThreatDistribution,
-  generateVolumeData, generateThreatLog,
+  generateThreatLog,
 } from '../data/mockData';
 
 export default function Overview() {
   const [stats, setStats] = useState(generateStats());
   const [threats, setThreats] = useState(generateThreatFeed(15));
-  const [distribution, setDistribution] = useState(generateThreatDistribution());
+  const [distribution] = useState(generateThreatDistribution());
   const [isLive, setIsLive] = useState(true);
 
   // Simulate live WebSocket updates
@@ -29,137 +29,124 @@ export default function Overview() {
   }, []);
 
   const blockRateValue = parseFloat(stats.blockRate);
-  const circumference = 2 * Math.PI * 88;
-  const strokeDashoffset = circumference - (blockRateValue / 100) * circumference;
+
+  // SVG donut chart values
+  const circumference = 2 * Math.PI * 44;
+  const injectionDash = circumference * 0.58;
+  const spoofingDash = circumference * 0.29;
+  const overflowDash = circumference * 0.13;
 
   return (
     <div className="fade-in-up">
-      {/* Hero Header Section */}
-      <div className="flex justify-between items-end mb-16">
-        <div>
-          <h2 className="text-5xl font-headline italic font-light text-on-surface leading-tight mb-2">
-            The Vault <span className="text-slate-500 opacity-50">Overview</span>
-          </h2>
-          <p className="text-sm font-body text-on-surface-variant tracking-wider max-w-lg">
-            Active protocol surveillance is engaged. Your security perimeter is currently mitigating {stats.totalRequests.toLocaleString()} concurrent vector explorations.
-          </p>
-        </div>
-        <div className="text-right">
-          <div className="text-[10px] font-label text-slate-500 tracking-[0.4em] uppercase mb-1">Last Sync</div>
-          <div className="text-xl font-body text-secondary font-light">
-            {new Date().toLocaleTimeString('en-US', { hour12: false })} <span className="text-[10px] opacity-50">UTC</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Dashboard Grid */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Large Stat Highlight (Bento Item 1) */}
-        <div className="col-span-12 lg:col-span-4 glass-panel p-8 flex flex-col justify-between min-h-[400px]">
+      {/* Header Section */}
+      <section className="mb-12">
+        <div className="flex justify-between items-end">
           <div>
-            <span className="text-[10px] font-label tracking-widest text-primary uppercase mb-8 block">Global Efficiency</span>
-            <div className="relative w-48 h-48 mx-auto flex items-center justify-center mt-4">
-              {/* Circular Ring Visual */}
-              <svg className="absolute inset-0 w-full h-full -rotate-90">
-                <circle className="text-white/5" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" strokeWidth="2"></circle>
-                <circle 
-                  className="text-primary transition-all duration-1000" 
-                  cx="96" cy="96" fill="transparent" r="88" 
-                  stroke="currentColor" 
-                  strokeDasharray={circumference} 
-                  strokeDashoffset={strokeDashoffset} 
-                  strokeWidth="6"
-                  strokeLinecap="square"
-                ></circle>
-              </svg>
-              <div className="text-center">
-                <span className="text-5xl font-headline italic block text-on-surface">{stats.blockRate}%</span>
-                <span className="text-[10px] font-label tracking-widest text-slate-500 uppercase">Block Rate</span>
-              </div>
-            </div>
+            <h2 className="font-headline text-4xl text-on-surface mb-2">Network Sovereignty Overview</h2>
+            <p className="font-body text-slate-400 text-sm max-w-xl">
+              Real-time surveillance and interception metrics for the ShieldProxy Vanguard array. High-fidelity data stream active.
+            </p>
           </div>
-          <p className="text-xs text-on-surface-variant font-light leading-relaxed mt-8">
-            The current block rate indicates an {stats.threatsBlockedDelta}% increase in prophylactic interceptions compared to the previous 24-hour cycle.
-          </p>
+          <div className="text-right">
+            <p className="font-label text-[10px] text-secondary-fixed-dim uppercase tracking-[0.2em]">Node Location</p>
+            <p className="font-body text-xl font-light text-on-surface">ZURICH_VAULT_01</p>
+          </div>
         </div>
+      </section>
 
-        {/* Secondary Stats Grid (Bento Item 2) */}
-        <div className="col-span-12 lg:col-span-8 grid grid-cols-2 gap-6">
-          {/* Stat Card 1 */}
-          <div className="glass-panel p-8 hover:bg-surface-container-high transition-all group">
-            <div className="flex justify-between items-start mb-6">
-              <span className="material-symbols-outlined text-primary text-3xl opacity-50 group-hover:opacity-100 transition-opacity">security</span>
-              <span className="text-[10px] text-primary bg-primary/10 px-2 py-1 tracking-tighter">+{stats.threatsBlockedDelta}%</span>
-            </div>
-            <div className="text-4xl font-body font-light mb-1">{stats.threatsBlocked.toLocaleString()}</div>
-            <div className="text-xs font-label uppercase tracking-widest text-slate-500">Threats Blocked</div>
+      {/* Stats Grid */}
+      <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+        {/* Global Efficiency */}
+        <div className="glass-panel p-6 emerald-glow relative overflow-hidden group">
+          <div className="light-cap absolute top-0 left-0"></div>
+          <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-4">Global Efficiency</p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-body text-3xl font-bold text-primary-container">{blockRateValue}%</span>
+            <span className="text-xs text-primary/60 font-medium">Overall Block Rate</span>
           </div>
-          {/* Stat Card 2 */}
-          <div className="glass-panel p-8 hover:bg-surface-container-high transition-all group">
-            <div className="flex justify-between items-start mb-6">
-              <span className="material-symbols-outlined text-secondary text-3xl opacity-50 group-hover:opacity-100 transition-opacity">group</span>
-              <span className="text-[10px] text-secondary bg-secondary/10 px-2 py-1 tracking-tighter">LIVE</span>
-            </div>
-            <div className="text-4xl font-body font-light mb-1">{stats.activeClients}</div>
-            <div className="text-xs font-label uppercase tracking-widest text-slate-500">Active Clients</div>
-          </div>
-          {/* Stat Card 3 */}
-          <div className="glass-panel p-8 hover:bg-surface-container-high transition-all group">
-            <div className="flex justify-between items-start mb-6">
-              <span className="material-symbols-outlined text-slate-400 text-3xl opacity-50 group-hover:opacity-100 transition-opacity">speed</span>
-              <span className="text-[10px] text-slate-400 bg-white/5 px-2 py-1 tracking-tighter">{stats.avgLatencyDelta}ms</span>
-            </div>
-            <div className="text-4xl font-body font-light mb-1">{stats.avgLatency}ms</div>
-            <div className="text-xs font-label uppercase tracking-widest text-slate-500">Avg Latency</div>
-          </div>
-          {/* Stat Card 4 */}
-          <div className="glass-panel p-8 hover:bg-surface-container-high transition-all group">
-            <div className="flex justify-between items-start mb-6">
-              <span className="material-symbols-outlined text-primary text-3xl opacity-50 group-hover:opacity-100 transition-opacity">verified_user</span>
-              <span className="text-[10px] text-primary bg-primary/10 px-2 py-1 tracking-tighter">OPTIMAL</span>
-            </div>
-            <div className="text-4xl font-body font-light mb-1">99.9%</div>
-            <div className="text-xs font-label uppercase tracking-widest text-slate-500">System Integrity</div>
+          <div className="mt-4 h-1 w-full bg-surface-container-highest">
+            <div className="h-full bg-primary-container transition-all duration-1000" style={{ width: `${blockRateValue}%` }}></div>
           </div>
         </div>
 
-        {/* Live Interception Feed (Bento Item 3) */}
-        <div className="col-span-12 lg:col-span-8 glass-panel overflow-hidden">
-          <div className="p-8 border-b border-white/5 flex justify-between items-center">
-            <h3 className="font-headline italic text-2xl">Live Interception Feed</h3>
-            <div className="flex gap-4">
-              <span className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-500">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary"></span> Intercepted
-              </span>
-              <span className={`flex items-center gap-2 text-[10px] uppercase tracking-widest text-slate-500`}>
-                <span className={`w-1.5 h-1.5 rounded-full bg-error ${isLive ? 'animate-pulse' : ''}`}></span> {isLive ? 'Live' : 'Paused'}
-              </span>
+        {/* Threats Neutralized */}
+        <div className="glass-panel p-6 emerald-glow relative overflow-hidden group">
+          <div className="light-cap absolute top-0 left-0 opacity-40"></div>
+          <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-4">Threats Neutralized</p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-body text-3xl font-bold text-on-surface">{stats.threatsBlocked.toLocaleString()}</span>
+            <span className="material-symbols-outlined text-primary-container text-sm">trending_up</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-2">Cumulative 24h Period</p>
+        </div>
+
+        {/* Array Latency */}
+        <div className="glass-panel p-6 emerald-glow relative overflow-hidden group">
+          <div className="light-cap absolute top-0 left-0 opacity-40"></div>
+          <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-4">Array Latency</p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-body text-3xl font-bold text-secondary-fixed-dim">{stats.avgLatency}ms</span>
+            <span className="text-xs text-secondary-fixed-dim/60 font-medium">AVG</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-2">Nominal Performance Range</p>
+        </div>
+
+        {/* Sovereign Nodes */}
+        <div className="glass-panel p-6 emerald-glow relative overflow-hidden group">
+          <div className="light-cap absolute top-0 left-0 opacity-40"></div>
+          <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest mb-4">Sovereign Nodes</p>
+          <div className="flex items-baseline gap-2">
+            <span className="font-body text-3xl font-bold text-on-surface">{stats.activeClients}</span>
+            <span className="text-xs text-slate-400 font-medium">ACTIVE</span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-2">High-Security Clusters</p>
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Live Interception Feed (2/3 width) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex justify-between items-center px-2">
+            <h3 className="font-headline text-2xl text-on-surface">Live Interception Feed</h3>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setIsLive(!isLive)}
+                className="text-[10px] font-label text-slate-500 uppercase tracking-widest hover:text-primary-container transition-colors"
+              >
+                Auto-Refresh: {isLive ? 'ON' : 'OFF'}
+              </button>
+              <span className="material-symbols-outlined text-slate-400 text-sm cursor-pointer hover:text-emerald-300 transition-colors">filter_list</span>
             </div>
           </div>
-          <div className="overflow-x-auto no-scrollbar max-h-[400px]">
-            <table className="w-full text-left font-body">
-              <thead className="bg-white/5 text-[10px] uppercase tracking-widest text-slate-400 sticky top-0 z-10">
+
+          <div className="glass-panel overflow-hidden">
+            <table className="w-full text-left font-body text-sm">
+              <thead className="bg-surface-container-high/50">
                 <tr>
-                  <th className="px-8 py-4 font-normal">Timestamp</th>
-                  <th className="px-8 py-4 font-normal">Classification</th>
-                  <th className="px-8 py-4 font-normal">Source Vector</th>
-                  <th className="px-8 py-4 font-normal">Status</th>
+                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-medium">Timestamp</th>
+                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-medium">Classification</th>
+                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-medium">Source Vector</th>
+                  <th className="px-6 py-4 text-[10px] uppercase tracking-widest text-slate-500 font-medium">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 text-xs">
-                {threats.map((t, i) => (
-                  <tr key={t.id} className="hover:bg-primary/5 transition-colors group">
-                    <td className="px-8 py-4 font-light text-slate-500">{t.timeStr}</td>
-                    <td className="px-8 py-4">
-                      <span className={`px-2 py-0.5 text-[9px] uppercase tracking-widest ${
-                        t.severity === 'critical' ? 'bg-error/10 text-error' : 'bg-primary/10 text-primary'
+              <tbody className="divide-y divide-white/5">
+                {threats.slice(0, 8).map((t) => (
+                  <tr key={t.id} className="hover:bg-white/5 transition-colors group">
+                    <td className="px-6 py-4 text-slate-400 font-light">{t.timeStr}</td>
+                    <td className="px-6 py-4">
+                      <span className={`px-2 py-0.5 border text-[10px] rounded-sm ${
+                        t.severity === 'critical' ? 'border-error/30 text-error bg-error/5' :
+                        t.severity === 'high' ? 'border-tertiary-fixed-dim/30 text-tertiary-fixed-dim bg-tertiary-fixed-dim/5' :
+                        'border-secondary-fixed-dim/30 text-secondary-fixed-dim bg-secondary-fixed-dim/5'
                       }`}>
-                        {t.category}
+                        {t.category.toUpperCase().replace(/\s/g, '_')}
                       </span>
                     </td>
-                    <td className="px-8 py-4 font-mono text-slate-300">{t.source}</td>
-                    <td className={`px-8 py-4 ${t.status === 'blocked' ? 'text-primary' : 'text-error'}`}>
-                      {t.status === 'blocked' ? 'NULLIFIED' : 'DETOURED'}
+                    <td className="px-6 py-4 text-on-surface">{t.source}</td>
+                    <td className={`px-6 py-4 flex items-center gap-2 ${t.status === 'blocked' ? 'text-primary-container' : 'text-slate-400'}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${t.status === 'blocked' ? 'bg-primary-container' : 'bg-slate-600'}`}></span>
+                      {t.status === 'blocked' ? 'BLOCKED' : 'PASSED'}
                     </td>
                   </tr>
                 ))}
@@ -168,52 +155,82 @@ export default function Overview() {
           </div>
         </div>
 
-        {/* Threat Distribution (Bento Item 4) */}
-        <div className="col-span-12 lg:col-span-4 glass-panel p-8">
-          <h3 className="font-headline italic text-2xl mb-8">Threat Vectors</h3>
-          <div className="relative w-full aspect-square flex items-center justify-center">
-            {/* Simulated Donut Chart */}
-            <div className="absolute inset-0 rounded-full border-[16px] border-surface-container-high opacity-40"></div>
-            <div className="absolute inset-0 rounded-full border-[16px] border-primary border-t-transparent border-r-transparent rotate-45"></div>
-            <div className="absolute inset-0 rounded-full border-[16px] border-secondary border-b-transparent border-l-transparent -rotate-12"></div>
-            <div className="text-center z-10">
-              <span className="text-3xl font-headline block text-on-surface">58%</span>
-              <span className="text-[9px] font-label tracking-widest text-slate-500 uppercase">External Origin</span>
-            </div>
+        {/* Threat Vectors (1/3 width) */}
+        <div className="space-y-6">
+          <div className="px-2">
+            <h3 className="font-headline text-2xl text-on-surface">Threat Vectors</h3>
           </div>
-          <div className="mt-8 space-y-4">
-            {distribution.slice(0, 3).map((item, i) => (
-              <div key={i} className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2" style={{ backgroundColor: i === 0 ? '#a0ffc3' : i === 1 ? '#00e3fd' : '#ffffff33' }}></div>
-                  <span className="text-[10px] uppercase tracking-widest text-slate-300">{item.name}</span>
-                </div>
-                <span className="text-xs font-mono" style={{ color: i === 0 ? '#a0ffc3' : i === 1 ? '#00e3fd' : '#94a3b8' }}>
-                  {item.value}
-                </span>
+
+          <div className="glass-panel p-8 flex flex-col items-center justify-center relative aspect-square">
+            <div className="light-cap absolute top-0 left-0 opacity-20"></div>
+
+            {/* Circular Chart */}
+            <div className="relative w-48 h-48 rounded-full border-[12px] border-surface-container-highest flex items-center justify-center">
+              <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" fill="transparent" r="44" stroke="#00ff9d" strokeDasharray={`${injectionDash} ${circumference}`} strokeWidth="12"></circle>
+                <circle cx="50" cy="50" fill="transparent" r="44" stroke="#00e3fd" strokeDasharray={`${spoofingDash} ${circumference}`} strokeDashoffset={`-${injectionDash}`} strokeWidth="12"></circle>
+                <circle cx="50" cy="50" fill="transparent" r="44" stroke="#ffe17a" strokeDasharray={`${overflowDash} ${circumference}`} strokeDashoffset={`-${injectionDash + spoofingDash}`} strokeWidth="12"></circle>
+              </svg>
+              <div className="text-center">
+                <p className="font-body text-3xl font-bold text-on-surface">276</p>
+                <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest">Active Hits</p>
               </div>
-            ))}
+            </div>
+
+            <div className="mt-8 w-full space-y-3">
+              <div className="flex justify-between items-center text-xs font-body">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-primary-container"></span>
+                  <span className="text-slate-300">Injection Attacks</span>
+                </div>
+                <span className="text-on-surface font-semibold">58%</span>
+              </div>
+              <div className="flex justify-between items-center text-xs font-body">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-secondary-container"></span>
+                  <span className="text-slate-300">Identity Spoofing</span>
+                </div>
+                <span className="text-on-surface font-semibold">29%</span>
+              </div>
+              <div className="flex justify-between items-center text-xs font-body">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+                  <span className="text-slate-300">Buffer Overflow</span>
+                </div>
+                <span className="text-on-surface font-semibold">13%</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Context Bar */}
-      <div className="mt-12 flex justify-between items-center border-t border-white/5 pt-8">
-        <div className="flex gap-8">
-          <div>
-            <span className="text-[9px] font-label text-slate-500 uppercase tracking-widest">Node Region</span>
-            <div className="text-xs text-on-surface mt-1">EU-CENTRAL-1 (REDACTED)</div>
+      {/* System Intelligence Footer */}
+      <section className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="glass-panel p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+          <h4 className="font-headline text-3xl text-primary-container mb-4">Neural Defense Log</h4>
+          <p className="font-body text-slate-400 leading-relaxed text-sm">
+            ShieldProxy's autonomous sentry has detected a coordinated pattern of low-velocity pings originating from Cluster Delta. Defensive posture has been elevated to Level 4. Monitoring latency fluctuations in the Zurich pipeline for potential egress masking.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-6 pl-0 md:pl-12">
+          <div className="flex items-center gap-4">
+            <span className="material-symbols-outlined text-emerald-400">shield_with_heart</span>
+            <div>
+              <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest">Sentry Integrity</p>
+              <p className="font-body text-lg text-on-surface">99.999% Fault Tolerant</p>
+            </div>
           </div>
-          <div>
-            <span className="text-[9px] font-label text-slate-500 uppercase tracking-widest">Enforcement Mode</span>
-            <div className="text-xs text-primary mt-1 uppercase tracking-tighter">Strict Isolation</div>
+          <div className="flex items-center gap-4">
+            <span className="material-symbols-outlined text-emerald-400">lock_open</span>
+            <div>
+              <p className="font-label text-[10px] text-slate-500 uppercase tracking-widest">Current Key Rotation</p>
+              <p className="font-body text-lg text-on-surface">14 Minutes Remaining</p>
+            </div>
           </div>
         </div>
-        <div className="flex gap-2">
-          <button className="bg-white/5 border border-white/10 px-4 py-2 text-[10px] uppercase tracking-widest hover:bg-white/10 transition-colors">Export Log</button>
-          <button className="bg-white/5 border border-white/10 px-4 py-2 text-[10px] uppercase tracking-widest hover:bg-white/10 transition-colors">Archive State</button>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

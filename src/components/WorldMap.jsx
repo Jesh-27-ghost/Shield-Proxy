@@ -23,9 +23,9 @@ export default function WorldMap({ geoData }) {
                 key={geo.rsmKey}
                 geography={geo}
                 style={{
-                  default: { fill: "#111416", outline: "none", stroke: "#232629", strokeWidth: 0.5 },
-                  hover: { fill: "#171a1c", outline: "none", stroke: "#a0ffc3", strokeWidth: 0.5 },
-                  pressed: { fill: "#171a1c", outline: "none", stroke: "#a0ffc3", strokeWidth: 0.5 },
+                  default: { fill: "#1a1c1e", outline: "none", stroke: "#3b4a3f", strokeWidth: 0.3 },
+                  hover: { fill: "#282a2c", outline: "none", stroke: "#00ff9d", strokeWidth: 0.5 },
+                  pressed: { fill: "#282a2c", outline: "none", stroke: "#00ff9d", strokeWidth: 0.5 },
                 }}
               />
             ))
@@ -35,7 +35,7 @@ export default function WorldMap({ geoData }) {
         {geoData.map((loc, i) => {
           const intensity = loc.attacks / maxAttacks;
           const dotR = 2 + intensity * 6;
-          const color = i % 2 === 0 ? '#a0ffc3' : '#00e3fd';
+          const color = intensity > 0.6 ? '#ffb4ab' : intensity > 0.3 ? '#00ff9d' : '#00e3fd';
           const isHovered = hoveredCountry === loc.country;
 
           return (
@@ -48,7 +48,7 @@ export default function WorldMap({ geoData }) {
               <circle
                 r={dotR * (isHovered ? 2 : 1)}
                 fill={color}
-                opacity={0.6}
+                opacity={0.5}
                 className={isHovered ? '' : 'animate-pulse'}
               />
               <circle
@@ -56,18 +56,19 @@ export default function WorldMap({ geoData }) {
                 fill="#ffffff"
                 opacity={0.9}
               />
-              
+
               {isHovered && (
                 <g className="pointer-events-none">
                   <rect
                     x={10} y={-35}
                     width={140} height="40"
-                    fill="#0c0e10"
+                    fill="#121416"
                     stroke={color}
                     strokeWidth="1"
                     className="opacity-90"
+                    rx="2"
                   />
-                  <text x={20} y={-22} fill="#f0f0f3" fontSize="10" className="font-headline italic">
+                  <text x={20} y={-22} fill="#e2e2e5" fontSize="10" className="font-headline">
                     {loc.country}
                   </text>
                   <text x={20} y={-8} fill={color} fontSize="10" className="font-body font-bold">
